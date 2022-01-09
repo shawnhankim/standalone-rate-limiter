@@ -1,4 +1,4 @@
-.PHONY: start watch down clean clean-pycache unit-test functional-test test
+.PHONY: start watch down clean clean-cache unit-test functional-test test
 .DEFAULT_GOAL := help
 
 PYTHONPATH=$(PWD)/services/rate-limiter
@@ -30,8 +30,10 @@ clean:
 	docker system prune -a
 	docker volume rm $(docker volume ls -qf dangling=true)
 
-clean-pycache:
+clean-cache:
 	find . -type d -name __pycache__ -exec rm -r {} \+
+	find . -type d -name .cache -exec rm -r {} \+
+	find . -type d -name .pytest_cache -exec rm -r {} \+
 
 lint:
 	@flake8
