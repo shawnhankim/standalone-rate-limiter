@@ -1,0 +1,58 @@
+version: '2.2'
+
+networks: 
+  mynetwork:
+    name: mynetwork
+    attachable: true
+
+services:
+  api-gateway:
+    container_name: standalone-api-gateway
+    build:
+      context: ./
+      dockerfile: ./docker/api-gateway/Dockerfile
+    image: nginx-api-gateway
+    ports: 
+      - 80:80
+    volumes:
+      - type: bind
+        source: ./services/api-gateway
+        target: /etc/nginx/
+      - type: bind
+        source: ./services/api-gateway/conf.d
+        target: /etc/nginx/conf.d
+    networks:
+      - mynetwork
+
+  rate-limiter:
+    container_name: standalone-rate-limiter
+    build:
+      context: ./
+      dockerfile: ./docker/rate-limiter/Dockerfile
+    image: flask-rate-limiter
+    ports: 
+      - 8001:8000
+    volumes:
+      - type: bind
+        source: ./services/rate-limiter
+        target: /var/www/rate-limiter/
+    networks:
+      - mynetwork
+
+  upload-app:
+    container_name: standalone-upload-app
+    build:
+      context: ./
+      dockerfile: ./docker/upload-app/Dockerfile
+    image: nginx-upload-app
+    ports: 
+      - 9001:80
+    volumes:
+      - type: bind
+        source: ./services/upload-app
+        target: /etc/nginx/
+      - type: bind
+        source: ./services/upload-app/conf.d
+        target: /etc/nginx/conf.d
+    networks:
+      - mynetwork
