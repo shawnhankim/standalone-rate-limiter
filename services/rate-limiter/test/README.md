@@ -21,29 +21,51 @@ To set the python environment variable PYTHONPATH on Mac, follow the given steps
 It would show something like `/Users/my_user/xxx/rate-limiter/01-solution/services/rate-limiter/`. That is it. `PYTHONPATH` is set. 
 
 ## Unit Test
-```
+
+**option 1:**
+```bash
 $ cd unit
-$ pytest
+$ python {your python file}
 ```
 
+**option 2**
+```bash
+$ cd {root path of this repo}
+$ make unit-test
+```
+
+
 ## Functional Test
+
+**option 1:**
 ```bash
 $ cd functional
-$ python 02_rate_limiter_test_user.py
+$ python {your python file}
+$ bash run_test.sh
 ```
+
+**option 2**
+```bash
+$ cd {root path of this repo}
+$ make functional-test
+```
+
 
 ## Integration Test
 
-**Run Docker containers: api-gateway, rate-limiter, fake upload-app**
+**option 1**
+
 ```bash
-$ docker-compose up
+$ cd integration
+$ go run {your go file}
 ```
 
-**Check if Docker containers are being run**
+**option 1**
 ```bash
-$ docker ps
-CONTAINER ID   PORTS                            NAMES
-bdfc48e1f8d1   8001/tcp, 0.0.0.0:8001->80/tcp   01-solution_upload-app_1
-64548a7a44dd   0.0.0.0:9001->9001/tcp           01-solution_rate-limiter_1
-91241a540678   0.0.0.0:80->80/tcp, 8001/tcp     01-solution_api-gateway_1
+$ cd {root path of this repo}
+$ make integration-test
 ```
+
+
+## E2E Test
+You could this [this doc](./end_to_end) for your end-to-end test among API Gateway, Rate Limiter, and Upload App.

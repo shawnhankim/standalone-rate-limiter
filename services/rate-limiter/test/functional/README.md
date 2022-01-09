@@ -2,27 +2,54 @@
 Functional testing is a quality assurance process and a type of black-box testing that bases its test cases on the specifications of the software component under test. Functions are tested by feeding them input and examining the output, and internal program structure is rarely considered.
 
 The functional test can be added into the CI/CD pipeline as one of automated stages. 
-But, this repo provides 7 test cases to be able to locally run and check the result. So there are no assertions. You can feel free to add your codes for additional test cases here to enhance test coverage. In addition to that, you could find a sample code how to use a rate limiter client.
-
-## Sample Code: How To Use Rate Limiter Client
-```python
+But, this repo provides 8 test cases to be able to locally run and check the result. So there are no assertions. You can feel free to add your codes for additional test cases to enhance test coverages. In addition to that, you could find [a sample code how to use a rate limiter](./01_rate_limiter_client_sample.py).
 
 ```
++--------------------------------------------------------+
+|                                                        |
+|                    Functional Test                     |
+|                                                        |
+|     (Rate Limiter Client -> Rate Limiter & Bucket)     |
+|                                                        |
++--------------------------------------------------------+
+```
+
+### Table of Contents
+- [Test Cases](#test-cases)
+- [How To Run Test Cases](#how-to-run-test-cases)
+- [Test Report Example](#test-report-example)
+
 
 ## Test Cases
-1. User Level Rate Limiter Test
-2. 1 User without Configuration
-3. 
-4. 
-5. 
-6. 
-7. 
+1. [Sample Rate Limiter Client: Configuring Policy and Processing Request](./01_rate_limiter_client_sample.py)
+2. [User Level Rate Limiter Test](./02_rate_limiter_test_user.py)
+3. [User Rate Limiter Test without Configuration](./03_rate_limiter_test_user_no_config.py)
+4. [Global Rate Limiter Test](./04_rate_limiter_test_global.py)
+5. [Global Rate Limiter Test without Configuration](./05_rate_limiter_test_global_no_config.py)
+6. [Both Global/User Rate Limiter Test](./06_rate_limiter_test_global_and_user.py)
+7. [Both Global & 2 Users Rate Limiter Test](./07_rate_limiter_test_global_and_2_users.py)
+8. [Both Global & 2 Users Rate Limiter Test With Different RPS](./08_rate_limiter_test_global_and_2_users_different_rps.py)
 
 ## How To Run Test Cases
+
+> Option 1
 ```bash
 $ export PYTHONPATH=/Users/{your-path}/rate-limiter/01-solution/services/rate-limiter
 $ python {file name}
 ```
+
+> Option 2
+```bash
+$ bash run_test.sh
+```
+
+> Option 3
+```bash
+$ cd {root path of this repo}
+$ make functional-test
+```
+
+## [Test Report Example](./test-result_sample.txt)
 
 ### Simulation Result Example for Test Case 2:
 
