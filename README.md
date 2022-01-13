@@ -48,6 +48,7 @@ This repo provides an example of standalone rate-limiter app that can be called 
 - Install Python 3.x for unit and functional test.
 - Install Docker and Docker Compose for integration, end-to-end (E2E) test.
 - Install Golang for integration test.
+- Add `127.0.0.1 host.docker.internal` into `/etc/hosts` file.
 
 **Create and run Docker container images for `api-gateway`, `upload-app`, and `rate-limiter`:**
 ```bash
@@ -81,17 +82,35 @@ After running docker containers, you could manually test the following test scen
 - Configuring global and user limit.
 - Requesting limit process via API Gateway to Rate Limiter.
 
-> Swagger Example:
+> **Swagger Example:**
   ![](./img/rate_limiter_api_openapi.png)
 
-> Postman Example:
+> **Postman Example:**
   ![](./img/rate_limiter_api_postman.png)
 
 ## Testing By Code
 The following code is to show how to test the rate limiter, and how it functionally works. It can be one of rate limiter clients in your code. But, I recommend that you run the rate limiter app which can be called by API gateway instead of implementing this to every business logic for flexibility and maintenability of your code. So you could focus on implementing your business logic only.
 
 ```python
-"""Sample Code For Rate Limiter"""
+"""Sample Code For Rate Limiter
+
+Processing Request Result Example:
+-------------------------------------------------
+   001. remaining: 3, 1641733112.402514 ,  True
+   002. remaining: 2, 1641733112.402637 ,  True
+   003. remaining: 1, 1641733112.402656 ,  True
+   004. remaining: 0, 1641733112.402667 , False
+        quota exhausted: request-004 is denied
+
+   005. remaining: 3, 1641733113.404896 ,  True
+   006. remaining: 2, 1641733113.405069 ,  True
+   007. remaining: 1, 1641733113.405118 ,  True
+   008. remaining: 0, 1641733113.405151 , False
+        quota exhausted: request-008 is denied
+
+   009. remaining: 3, 1641733114.4103858,  True
+   010. remaining: 2, 1641733114.410569 ,  True
+"""
 
 from core.common.utils import str_time
 from core.controller.rate_limiter import RateLimiter
@@ -132,6 +151,7 @@ if __name__ == "__main__":
 
 ## Directory Structure
 ```bash
+│ 
 ├── Makefile                          // CLIs for Easy Setup & Testing
 │ 
 ├── docker                            // Dockerfiles for 3 services
@@ -149,8 +169,8 @@ if __name__ == "__main__":
     │   ├── app                       // - App entry point (API server)
     │   ├── core                      // - Core business logic
     │   │   ├── apis                  //   + API business logic
-    │   │       ├── open_api.json     //     - Open API Schema
-    │   │       ├── *.py              //     - Business logic
+    │   │   │   ├── open_api.json     //     - Open API Schema
+    │   │   │   └── *.py              //     - Business logic
     │   │   ├── common                //   + Common functions/constants
     │   │   ├── models                //   + APi request/response model
     │   │   └── controller            //   + Rate Limiter controller for quota mgmt.
@@ -308,13 +328,15 @@ Let's talk about major downsides of this standalone-rate-limiter approach based 
 ### Data Consistency
   - **Use Case:** What if rate-limiters are run on `distributed machines`?
   - **Downside:** Each user's `quata-remaning` can be different `per each machine`.
-  - **Improvement:** Synchronizing local cache with remote centralized datastore.
+  - **Improvement:** 
+    - Synchronizing local cache with remote centralized datastore.
+    - What if local memory size is not enough? Using LRU cache and synching with datastore unless key doesn't exist.
 
 ### Race Condition
   - **Use Case:** Same data is available for multiple servers for a given user to read/write using mutex.
   - **Downside:** Latency issue to wait for locks release. (Rate Limiter <-> Network <-> Datastore)
   - **Improvement:** 
-    - Relaxation to the system to allow some failure percentage to avoid locks and resolve latency.
+    - Relaxation to the system to allow some failure percentage to avoid remote cache/DB locks and resolve latency.
     - Updating cache from datastore using hybrid approach between event message and regularly query.
 
 ### Security
